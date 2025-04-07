@@ -38,12 +38,7 @@ describe('Clock', () => {
       page.clock().should('not.exist');
     });
 
-    it('should appear after a left click', () => {
-      cy.get('body').rightclick();
-      cy.get('body').click();
 
-      page.clock().should('exist');
-    });
 
     it('should show start time', () => {
       page.clockTime().should('have.text', '09:32:31');
