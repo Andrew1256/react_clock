@@ -12,6 +12,8 @@ export class App extends React.Component<{}, State> {
 
   private nameIntervalId: number | null = null;
 
+  private prevClockName: string = 'Clock-0';
+
   private lastLoggedTime: string = '';
 
   state: State = {
@@ -21,7 +23,7 @@ export class App extends React.Component<{}, State> {
   };
 
   getRandomName(): string {
-    const value = Date.now().toString().slice(-4);
+    const value = new Date().getTime().toString().slice(-4);
 
     return `Clock-${value}`;
   }
@@ -31,7 +33,7 @@ export class App extends React.Component<{}, State> {
 
     if (newTime !== this.state.time) {
       this.setState({ time: newTime });
-      if (newTime !== this.lastLoggedTime) {
+      if (newTime !== this.lastLoggedTime && !this.state.rightClick) {
         // eslint-disable-next-line no-console
         console.log(newTime);
         this.lastLoggedTime = newTime;
@@ -42,18 +44,19 @@ export class App extends React.Component<{}, State> {
   updateClockName = () => {
     const newClockName = this.getRandomName();
 
-    this.setState(prevState => {
+    if (!this.state.rightClick) {
       // eslint-disable-next-line no-console
-      console.warn(`Renamed from ${prevState.clockName} to ${newClockName}`);
-
-      return { clockName: newClockName };
-    });
+      console.warn(`Renamed from ${this.prevClockName} to ${newClockName}`);
+      this.prevClockName = newClockName;
+      this.setState({ clockName: newClockName });
+    }
   };
 
   startIntervals = () => {
+    this.clearIntervals();
     this.timeIntervalId = window.setInterval(this.updateTime, 1000);
     this.nameIntervalId = window.setInterval(this.updateClockName, 3300);
-    this.updateTime(); // Ensure immediate time update
+    this.updateTime();
   };
 
   clearIntervals = () => {
@@ -68,13 +71,12 @@ export class App extends React.Component<{}, State> {
 
   handleContextMenu = (event: MouseEvent) => {
     event.preventDefault();
-    this.setState({ rightClick: true });
-    this.clearIntervals();
+    this.setState({ rightClick: true }, this.clearIntervals); // очищаємо таймери після зміни
   };
 
   handleClick = (event: MouseEvent) => {
     event.preventDefault();
-    this.setState({ rightClick: false }, this.startIntervals);
+    this.setState({ rightClick: false }, this.startIntervals); // запускаємо з нуля після зміни
   };
 
   componentDidMount() {
