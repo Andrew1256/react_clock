@@ -71,12 +71,12 @@ export class App extends React.Component<{}, State> {
 
   handleContextMenu = (event: MouseEvent) => {
     event.preventDefault();
-    this.setState({ rightClick: true }, this.clearIntervals); // очищаємо таймери після зміни
+    this.setState({ rightClick: true }); // очищаємо таймери після зміни
   };
 
   handleClick = (event: MouseEvent) => {
     event.preventDefault();
-    this.setState({ rightClick: false }, this.startIntervals); // запускаємо з нуля після зміни
+    this.setState({ rightClick: false }); // запускаємо з нуля після зміни
   };
 
   componentDidMount() {
